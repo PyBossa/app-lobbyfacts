@@ -1,3 +1,4 @@
 *.csv
 *.json
 config.py
+*.pyc

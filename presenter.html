@@ -1,0 +1,123 @@
+
+
+<p class="loading">loading the next task...</p>
+
+<div class="task">
+    <h1></h1>
+    <div class="row">
+        <div class="span4">
+            <h2>General</h2>
+            <ul class="unstyled">
+                <li>Website: <a target="_blank" class="website"></a></li>
+                <li>Category:<ul>
+                    <li class="main-cat"></li>
+                    <li class="sub-cat"></li>
+                </ul></li>
+            </ul>
+        </div>
+        <div class="span4">
+            <h2>Activities</h2>
+            <p class="activities"></p>
+        </div>
+        <div class="span4">
+            <h2>Networking</h2>
+            <p class="networking"></p>
+        </div>
+    </div>
+
+    <button id="submit" class="btn btn-primary">Submit</button>
+</div>
+
+<p></p>
+
+<script type="text/javascript">
+
+var endpoint = 'http://crowdcrafting.org/api/';
+
+$.fn.strippedHtml = function(html) {
+    var el = $(this),
+        maxChars = 200,
+        append = '<span class="expand">… <a href="#">[expand]</a></span> <a class="collapse" href="#">[collapse]</a>';
+    if (html && html.length > maxChars) {
+        el.data('full-content', html)
+            .html('<span class="stripped">'+html.substr(0, maxChars)+'</span>'+
+                '<span class="full">'+html+'</span>' + append);
+        $('.full, .collapse', el).hide();
+        $('a', el).click(function() {
+            $('.collapse, .expand, .stripped, .full', el).toggle();
+        });
+    } else {
+        el.html(html);
+    }
+};
+
+
+function getTask(id) {
+    var deferred = $.Deferred(), task;
+    $.ajax({
+        url: arguments.length ? endpoint + 'task/' + id : endpoint + 'app/219/newtask',
+        dataType: 'json'
+    }).done(function(resp) {
+        task = resp;
+        $.ajax({
+            url: 'http://api.lobbyfacts.eu/api/1/representative/' + task.info.id,
+            dataType: 'jsonp'
+        }).done(function(info) {
+            $.extend(task.info, info);
+            deferred.resolve(task);
+        }).fail(function() {
+            deferred.reject('Could not extend info about this representative');
+        });
+    }).fail(function() {
+        deferred.reject('Could not load new task');
+    });
+    return deferred.promise();
+}
+
+function presentTask(task) {
+    var solvedTask = $.Deferred();
+    $('.task').data('id', task.id);
+    $('.task h1').html(task.info.entity.name);
+    $('.task .website').attr('href', task.info.web_site_url).html(task.info.web_site_url.substr(7));
+    $('.task .main-cat').html(task.info.main_category.name);
+    $('.task .sub-cat').html(task.info.sub_category.name);
+    $('.task .activities').strippedHtml(task.info.activities);
+    $('.task .networking').strippedHtml(task.info.networking);
+    $('.task').show();
+    $('.loading').hide();
+
+    $('#submit').off('click');
+    $('#submit').click(function() {
+        pybossa.saveTask($('.task').data('id'), getResult()).done(function(res) {
+            solvedTask.resolve(res);
+        });
+    });
+
+    return solvedTask.promise();
+}
+
+function getResult() {
+    // categories
+    return { categories: [], country: '' };
+}
+
+function run(task, lastRes) {
+    var taskSolved = presentTask(task),
+        loadNext = getTask(1 + Number(task.id));
+
+    $.when(loadNext, taskSolved)
+        .done(run);
+}
+
+$(function() {
+
+    $('.task').hide();
+
+    if (pybossa.getCurrentTaskId() == false) {
+        getTask().done(run);
+    }
+
+});
+
+</script>
+
