@@ -1,34 +1,205 @@
 
+<style type="text/css">
+
+h2.step {
+    margin: 2em 0 1em;
+    font-size: 20px;
+}
+
+h2.step span {
+    display: inline-block;
+    width: 2em;
+    height: 2em;
+    line-height: 2em;
+    text-align: center;
+    border-radius: 1em;
+    background: #8BBF36;
+    color: #fff;
+    font-weight: bold;
+    font-size: 1.5;
+}
+
+.well .span4 {
+    width: 280px;
+}
+.well .span3 {
+    width: 210px;
+}
+
+.task h1 {
+    font-weight: bold;
+}
+
+.big-modal {
+    width: 960px;
+    margin-left: -480px;
+}
+
+.big-modal iframe {
+    width: 952px;
+    height: 500px;
+    margin-left: 3px;
+    margin-top: 3px;
+    border: 0;
+}
+
+.big-modal .modal-body {
+    max-height: 520px;
+    padding: 0;
+}
+
+.big-modal button {
+    position: absolute;
+    right: 30px;
+    top: 10px;
+    color: #000;
+    opacity: 1;
+    z-index: 100;
+    background: #fff;
+    padding: 3px;
+}
+
+.task .well {
+    -webkit-transition: background 1.5s linear;
+       -moz-transition: background 1.5s linear;
+        -ms-transition: background 1.5s linear;
+         -o-transition: background 1.5s linear;
+            transition: background 1.5s linear;
+}
+.task .well.flash {
+    background: #ffc;
+    -webkit-transition: background .0s linear;
+       -moz-transition: background .0s linear;
+        -ms-transition: background .0s linear;
+         -o-transition: background .0s linear;
+            transition: background .0s linear;    
+}
+</style>
 
 <p class="loading">loading the next task...</p>
 
-<div class="task">
-    <h1></h1>
-    <div class="row">
-        <div class="span4">
-            <h2>General</h2>
-            <ul class="unstyled">
-                <li>Website: <a target="_blank" class="website"></a></li>
-                <li>Category:<ul>
-                    <li class="main-cat"></li>
-                    <li class="sub-cat"></li>
-                </ul></li>
-            </ul>
-        </div>
-        <div class="span4">
-            <h2>Activities</h2>
-            <p class="activities"></p>
-        </div>
-        <div class="span4">
-            <h2>Networking</h2>
-            <p class="networking"></p>
+<div class="task hide">
+
+    <h2 class="step"><span>1</span> Inform yourself about this representative</h2>
+
+    <div class="well">
+        <h1></h1>
+        <div class="row">
+            <div class="span3">
+                <ul class="unstyled">
+                    <li><b>Website:</b><br/>
+                        <a target="_blank" class="show-website"><span class="contact-website-url"></span></a><br />
+                        <a target="_blank" class="search-web">search the web</a>
+                    </li>
+                    <!--<li><b>Category:</b><ul>
+                        <li class="main-cat"></li>
+                        <li class="sub-cat"></li>
+                    </ul></li>-->
+
+                </ul>
+            </div>
+            <div class="span3">
+                <strong>Goals:</strong>
+                <p class="goals"></p>
+            </div>
+            <div class="span3">
+                <strong>Networking:</strong>
+                <p class="networking"></p>
+            </div>
+            <div class="span3">
+                <strong>Activities:</strong>
+                <p class="activities"></p>
+            </div>
+
         </div>
     </div>
 
-    <button id="submit" class="btn btn-primary">Submit</button>
+    <h2 class="step"><span>2</span> Categorize the representative</h2>
+
+    <div class="row">
+        <div class="span3">
+            <p>We ask you to select the category you think this representative belongs to. If unsure, please check back the <a class="show-website" href="#" target="_blank">website</a>.</p>
+            <p>If you feel that this representative belongs to more than one category, click the button below to pick another category.</p>
+            
+        </div>
+        <div class="span3">
+            <select id="category-level-1" size="13">
+            </select>
+        </div>
+        <div class="span3">
+            <select id="category-level-2" size="10">
+            </select>
+        </div>
+        <div class="span3">
+            <select id="category-level-3" size="10">
+            </select>
+            <div style="margin-top:15px; text-align:right">
+                <button class="btn"><i class="icon-plus"></i> Assign to another category</button>
+            </div>
+        </div>
+    </div>
+
+
+    <h2 class="step"><span>3</span> Verify the representatives operative country</h2>
+
+    <div class="row">
+
+        <div class="span3">
+            <p>Please check if the representives contact address is also their <em>main operating address</em>. Please compare the given contact address with the information provided on the official website.</p>
+            <p>
+                <a class="show-website">Open official website</a>
+            </p>
+            <p>
+                <a class="search-web">Search the web</a>
+            </p>
+        </div>
+        <div class="span6">
+
+            <div class="row"><div class="span3">
+                <p>It might be helpful to check the contact address using <em>Google Streetview</em>.</p>
+                 <div class="well">
+                    <h5 style="margin-top:0"><b>Contact Address:</b></h5>
+                    <div class="contact-address"></div>
+                </div>
+                <a class="show-map">Show map / street view</a>
+            </div>
+            <div class="span3">
+                <p>Also, sometimes the information provided in <em>contact more</em> gives a hint to a different country of operation.</p>
+                <div class="well">
+                    <h5 style="margin-top:0"><B>Contact More:</b></h5>
+                    <div class="contact-more"></div>
+                </div>
+            </div></div>
+
+        </div>
+        <div class="span3">
+
+            <label for="country-select"><b>Change country if necessary:</b></label>
+            <input type="text" data-provide="typeahead" class="input-text input-large" id="country-select" />
+            </select>
+        </div>
+
+    </div>
+
+    <h2 class="step"><span>4</span> Submit result and proceed to next task</h2>
+
+    <button id="submit" class="btn btn-primary btn-large">Submit results</button>
 </div>
 
-<p></p>
+
+<div id="website-iframe" class="modal hide fade big-modal">
+  <div class="modal-body">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <iframe sandbox="allow-forms allow-scripts" src=""></iframe>
+  </div>
+</div>
+
+<div id="gmaps-iframe" class="modal hide fade big-modal">
+  <div class="modal-body">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <iframe src=""></iframe>
+  </div>
+</div>
 
 <script type="text/javascript">
 
@@ -36,14 +207,15 @@ var endpoint = 'http://crowdcrafting.org/api/';
 
 $.fn.strippedHtml = function(html) {
     var el = $(this),
-        maxChars = 200,
+        maxChars = 140,
         append = '<span class="expand">… <a href="#">[expand]</a></span> <a class="collapse" href="#">[collapse]</a>';
     if (html && html.length > maxChars) {
         el.data('full-content', html)
             .html('<span class="stripped">'+html.substr(0, maxChars)+'</span>'+
                 '<span class="full">'+html+'</span>' + append);
         $('.full, .collapse', el).hide();
-        $('a', el).click(function() {
+        $('a', el).click(function(e) {
+            e.preventDefault();
             $('.collapse, .expand, .stripped, .full', el).toggle();
         });
     } else {
@@ -78,18 +250,87 @@ function presentTask(task) {
     var solvedTask = $.Deferred();
     $('.task').data('id', task.id);
     $('.task h1').html(task.info.entity.name);
-    $('.task .website').attr('href', task.info.web_site_url).html(task.info.web_site_url.substr(7));
+    if (task.info.web_site_url) {
+        $('.task .contact-website-url').html(task.info.web_site_url.substr(7));
+        $('.task .show-website')
+            .show()
+            .off('click')
+            .on('click', function(e) {
+                $('#website-iframe iframe').attr('src', task.info.web_site_url);
+                $('#website-iframe').modal();
+                e.preventDefault();
+            });
+    } else {
+        $('.task .show-website').hide();
+    }
+
+    $('.search-web')
+        .off('click')
+        .on('click', function() {
+            $('#website-iframe iframe').attr('src', 'https://duckduckgo.com/?q=' + task.info.entity.name);
+            $('#website-iframe').modal();
+            e.preventDefault();
+        });
+
+    var addr_query = task.info.contact_street + ' ' + task.info.contact_number + ', ' + task.info.contact_post_code + ', ' + task.info.contact_town + ', ' + task.info.contact_country.name;
+
+    if (task.info.contact_lat && task.info.contact_lon) {
+        $('.task .show-map').show().off('click')
+            .on('click', function(e) {
+                var ll = task.info.contact_lat+','+task.info.contact_lon;
+
+                $('#gmaps-iframe').modal();
+                $('#gmaps-iframe iframe').attr('src', '');
+
+                $.ajax({
+                    url: 'http://maps.google.com/cbk?output=json&ll='+ll,
+                    dataType: 'jsonp'
+                }).done(function(resp) {
+                    if (resp.Location.panoId) {
+                        $('#gmaps-iframe iframe').attr('src', 'http://maps.google.com/maps?q='+addr_query+'&hl=en&ie=UTF8&sll='+resp.Location.original_lat+','+resp.Location.original_lon+'&sspn=0.463075,1.212616&t=h&hnear='+addr_query+'&panoid='+resp.Location.panoId+'&layer=c&cbll='+ll+'&cbp=12,58.32,,0,'+resp.Projection.tilt_yaw_deg+'&view=map&z=14&source=embed&output=svembed');
+                    } else {
+                        $('#gmaps-iframe iframe').attr('src', 'http://maps.google.com/maps?q='+addr_query+'&hl=en&ie=UTF8&sll='+ll+'&sspn=0.463075,1.212616&t=h&hnear='+addr_query+'&z=19&output=embed');
+                    }
+                });
+
+                e.preventDefault();
+            });
+    } else {
+        $('.task .show-map').off('click').on('click', function(e) {
+            $('#gmaps-iframe').modal();
+            $('#gmaps-iframe iframe').attr('src', 'https://duckduckgo.com/?q=!bm '+addr_query);
+        });
+    }
+
     $('.task .main-cat').html(task.info.main_category.name);
     $('.task .sub-cat').html(task.info.sub_category.name);
-    $('.task .activities').strippedHtml(task.info.activities);
-    $('.task .networking').strippedHtml(task.info.networking);
+    $('.task .contact-address').html(
+        task.info.contact_street + ' ' +
+        task.info.contact_number + '<br /> ' +
+        task.info.contact_post_code + ' ' +
+        task.info.contact_town + ', ' +
+        task.info.contact_country.name
+    );
+    $('.task .contact-country').html(task.info.contact_country.name);
+    $('#country-select').val(task.info.contact_country.name);
+    $('.task .contact-town').html(task.info.contact_town);
+    $('.task .contact-more').strippedHtml(task.info.contact_more || 'n/a');
+    //$('.task .contact-town').html(task.info.contact_town);
+    $('.task .activities').strippedHtml(task.info.activities || 'n/a');
+    $('.task .networking').strippedHtml(task.info.networking || 'n/a');
+    $('.task .goals').strippedHtml(task.info.goals || 'n/a');
     $('.task').show();
     $('.loading').hide();
+
+    // flash representive infobox for 2 secs to indicate the update
+    $('.task .well').addClass('flash');
+    setTimeout(function() { $('.task .well').removeClass('flash'); }, 2000);
 
     $('#submit').off('click');
     $('#submit').click(function() {
         pybossa.saveTask($('.task').data('id'), getResult()).done(function(res) {
             solvedTask.resolve(res);
+            $('body,html').scrollTop(0);
         });
     });
 
@@ -98,7 +339,7 @@ function presentTask(task) {
 
 function getResult() {
     // categories
-    return { categories: [], country: '' };
+    return { categories: [], country: $('#country-select').val() };
 }
 
 function run(task, lastRes) {
@@ -109,14 +350,50 @@ function run(task, lastRes) {
         .done(run);
 }
 
-$(function() {
 
-    $('.task').hide();
+
+$.each(LobbyFactsCategories, function(i, category) {
+    var opt = $('<option value="'+category.id+'">'+category.title+'</option>');
+    if (category.children) {
+        opt.data('children', category.children);
+        opt.click(function(evt) {
+            $('#category-level-3').html('');
+            var select = $('#category-level-2');
+            select.html('<option value="-1">(no category)</option>');
+            $.each($(evt.target).data('children'), function(i, cat) {
+                var opt = $('<option value="'+cat.id+'">'+cat.title+'</option>');
+                select.append(opt);
+                if (cat.children) {
+                    opt.data('children', cat.children);
+                    opt.click(function(evt) {
+                        var select = $('#category-level-3');
+                        select.html('<option value="-1">(no category)</option>');
+                        $.each($(evt.target).data('children'), function(i, c) {
+                            select.append('<option value="'+c.id+'">'+c.title+'</option>');
+                        });
+                    });
+                } else {
+                    opt.click(function(evt) {
+                        $('#category-level-3').html('');
+                    })
+                }
+            });
+        });
+    }  else {
+        opt.click(function(evt) {
+            $('#category-level-2, #category-level-3').html('');
+        });
+    }
+    $('#category-level-1').append(opt);
+});
+
+$(function() {
 
     if (pybossa.getCurrentTaskId() == false) {
         getTask().done(run);
     }
 
+    $("#country-select").data('source', ["Afghanistan", "Albania", "Algeria", "American Samoa", "Andorra", "Angola", "Anguilla", "Antarctica", "Antigua and Barbuda", "Argentina", "Armenia", "Aruba", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bermuda", "Bhutan", "Bolivia", "Bosnia and Herzegowina", "Botswana", "Bouvet Island", "Brazil", "British Indian Ocean Territory", "Brunei Darussalam", "Bulgaria", "Burkina Faso", "Burundi", "Cambodia", "Cameroon", "Canada", "Cape Verde", "Cayman Islands", "Central African Republic", "Chad", "Chile", "China", "Christmas Island", "Cocos (Keeling) Islands", "Colombia", "Comoros", "Congo", "Congo, the Democratic Republic of the", "Cook Islands", "Costa Rica", "Cote d'Ivoire", "Croatia (Hrvatska)", "Cuba", "Cyprus", "Czech Republic", "Denmark", "Djibouti", "Dominica", "Dominican Republic", "East Timor", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Ethiopia", "Falkland Islands (Malvinas)", "Faroe Islands", "Fiji", "Finland", "France", "France, Metropolitan", "French Guiana", "French Polynesia", "French Southern Territories", "Gabon", "Gambia", "Georgia", "Germany", "Ghana", "Gibraltar", "Greece", "Greenland", "Grenada", "Guadeloupe", "Guam", "Guatemala", "Guinea", "Guinea-Bissau", "Guyana", "Haiti", "Heard and Mc Donald Islands", "Holy See (Vatican City State)", "Honduras", "Hong Kong", "Hungary", "Iceland", "India", "Indonesia", "Iran (Islamic Republic of)", "Iraq", "Ireland", "Israel", "Italy", "Jamaica", "Japan", "Jordan", "Kazakhstan", "Kenya", "Kiribati", "Korea, Democratic People's Republic of", "Korea, Republic of", "Kuwait", "Kyrgyzstan", "Lao People's Democratic Republic", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libyan Arab Jamahiriya", "Liechtenstein", "Lithuania", "Luxembourg", "Macau", "Macedonia, The Former Yugoslav Republic of", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands", "Martinique", "Mauritania", "Mauritius", "Mayotte", "Mexico", "Micronesia, Federated States of", "Moldova, Republic of", "Monaco", "Mongolia", "Montserrat", "Morocco", "Mozambique", "Myanmar", "Namibia", "Nauru", "Nepal", "Netherlands", "Netherlands Antilles", "New Caledonia", "New Zealand", "Nicaragua", "Niger", "Nigeria", "Niue", "Norfolk Island", "Northern Mariana Islands", "Norway", "Oman", "Pakistan", "Palau", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Pitcairn", "Poland", "Portugal", "Puerto Rico", "Qatar", "Reunion", "Romania", "Russian Federation", "Rwanda", "Saint Kitts and Nevis", "Saint LUCIA", "Saint Vincent and the Grenadines", "Samoa", "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Seychelles", "Sierra Leone", "Singapore", "Slovakia (Slovak Republic)", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "South Georgia and the South Sandwich Islands", "Spain", "Sri Lanka", "St. Helena", "St. Pierre and Miquelon", "Sudan", "Suriname", "Svalbard and Jan Mayen Islands", "Swaziland", "Sweden", "Switzerland", "Syrian Arab Republic", "Taiwan, Province of China", "Tajikistan", "Tanzania, United Republic of", "Thailand", "Togo", "Tokelau", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", "Turks and Caicos Islands", "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "United States", "United States Minor Outlying Islands", "Uruguay", "Uzbekistan", "Vanuatu", "Venezuela", "Viet Nam", "Virgin Islands (British)", "Virgin Islands (U.S.)", "Wallis and Futuna Islands", "Western Sahara", "Yemen", "Yugoslavia", "Zambia", "Zimbabwe"]);
 });
 
 </script>
