@@ -19,6 +19,8 @@ html = cat_html + html
 app = pbclient.find_app(short_name=config.APP)[0]
 
 app.info['task_presenter'] = html
+app.long_description = open('long-description.html').read().replace('%APP%', config.APP)
 app.info['sched'] = 'default'
+app.info['thumbnail'] = 'http://i46.tinypic.com/14js2tx.png'
 
 pbclient.update_app(app)

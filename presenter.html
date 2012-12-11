@@ -74,6 +74,11 @@ h2.step span {
          -o-transition: background .0s linear;
             transition: background .0s linear;    
 }
+
+#preview-categories li span {
+    color: #aaa;
+    font-style: italic;
+}
 </style>
 
 <p class="loading">loading the next task...</p>
@@ -83,6 +88,7 @@ h2.step span {
     <h2 class="step"><span>1</span> Inform yourself about this representative</h2>
 
     <div class="well">
+        <span class="badge pull-right" id="task-id"></span>
         <h1></h1>
         <div class="row">
             <div class="span3">
@@ -119,22 +125,26 @@ h2.step span {
     <div class="row">
         <div class="span3">
             <p>We ask you to select the category you think this representative belongs to. If unsure, please check back the <a class="show-website" href="#" target="_blank">website</a>.</p>
-            <p>If you feel that this representative belongs to more than one category, click the button below to pick another category.</p>
-            
+
+            <p><b>Your selection:</b></p>
+            <ul id="preview-categories">
+                <li class="current"><span>no category chosen</span></li>
+            </ul>
         </div>
         <div class="span3">
-            <select id="category-level-1" size="13">
+            <select class="category" id="category-level-1" size="13">
             </select>
         </div>
         <div class="span3">
-            <select id="category-level-2" size="10">
+            <select class="category" id="category-level-2" size="9">
             </select>
+            <p>If you feel that this representative belongs to more than one category, click the button on the right:</p>
         </div>
         <div class="span3">
-            <select id="category-level-3" size="10">
+            <select class="category" id="category-level-3" size="9">
             </select>
-            <div style="margin-top:15px; text-align:right">
-                <button class="btn"><i class="icon-plus"></i> Assign to another category</button>
+            <div style="margin-top:29px; text-align:right">
+                <button id="assign-new-category" class="btn"><i class="icon-plus"></i> Assign to another category</button>
             </div>
         </div>
     </div>
@@ -181,9 +191,11 @@ h2.step span {
 
     </div>
 
-    <h2 class="step"><span>4</span> Submit result and proceed to next task</h2>
+    <h2 class="step"><span>4</span> Check again and submit results</h2>
 
-    <button id="submit" class="btn btn-primary btn-large">Submit results</button>
+    <div style="text-align:left">
+        <button id="submit" class="btn btn-primary btn-large">Submit results</button>
+    </div>
 </div>
 
 
@@ -227,7 +239,7 @@ $.fn.strippedHtml = function(html) {
 function getTask(id) {
     var deferred = $.Deferred(), task;
     $.ajax({
-        url: arguments.length ? endpoint + 'task/' + id : endpoint + 'app/219/newtask',
+        url: id ? endpoint + 'task/' + id : endpoint + 'app/219/newtask',
         dataType: 'json'
     }).done(function(resp) {
         task = resp;
@@ -248,7 +260,9 @@ function getTask(id) {
 
 function presentTask(task) {
     var solvedTask = $.Deferred();
+    location.hash = '#/' + task.id;
     $('.task').data('id', task.id);
+    $('#task-id').html('#'+task.id);
     $('.task h1').html(task.info.entity.name);
     if (task.info.web_site_url) {
         $('.task .contact-website-url').html(task.info.web_site_url.substr(7));
@@ -337,10 +351,86 @@ function presentTask(task) {
     return solvedTask.promise();
 }
 
+
+
+// populate category select boxes
+function initCategories() {
+    $.each(LobbyFactsCategories, function(i, category) {
+        var opt = $('<option value="'+category.id+'">'+category.title+'</option>');
+        if (category.children) {
+            opt.data('children', category.children);
+            opt.click(function(evt) {
+                $('#category-level-3').html('');
+                var select = $('#category-level-2');
+                select.html('<option value="-1">(no category)</option>');
+                $.each($(evt.target).data('children'), function(i, cat) {
+                    var opt = $('<option value="'+(cat.id || "n/a")+'">'+(cat.title || "...")+'</option>');
+                    if (cat.children) {
+                        opt.data('children', cat.children);
+                    }
+                    select.append(opt);
+                });
+                // level 2 click
+                $('option', select).click(function(evt) {
+                    var opt = $(evt.target),
+                        select = $('#category-level-3');
+                    if (opt.data('children')) {
+                        select.html('<option value="-1">(no category)</option>');
+                        $.each(opt.data('children'), function(i, c) {
+                            select.append('<option value="'+c.id+'">'+c.title+'</option>');
+                        });
+                    } else {
+                        select.html('');
+                    }
+                });
+            });
+        }  else {
+            opt.click(function(evt) {
+                $('#category-level-2, #category-level-3').html('');
+            });
+        }
+        $('#category-level-1').append(opt);
+    });
+    $('select.category').change(function(e) {
+        var ids = [
+                $('#category-level-1').val(),
+                $('#category-level-2').val(),
+                $('#category-level-3').val()],
+            lbls = [
+                $('#category-level-1 option:selected').html(),
+                $('#category-level-2 option:selected').html(),
+                $('#category-level-3 option:selected').html()];
+        $('#preview-categories .current')
+            .data('ids', ids.filter(function(d) { return d !== null && d != -1; }))
+            .html(lbls.filter(function(d) { return d !== null && d != '(no category)'; }).join(' ❯ '));
+    });
+    $('#assign-new-category').click(function(e) {
+        e.preventDefault();
+        $('#preview-categories .current')
+            .html($('#preview-categories .current').html() + ' <a href="#">(remove)</a>')
+            .removeClass('current');
+        $('#preview-categories').append('<li class="current"><span>no category chosen</span></li>');
+        $('#preview-categories li a').off('click').on('click', function(e) {
+            e.preventDefault();
+            $(e.target).parents('li').remove();
+        });
+
+        $('#category-level-2, #category-level-3').html('');
+        $('#category-level-1').val(false);
+    });
+}
+
 function getResult() {
     // categories
-    return { categories: [], country: $('#country-select').val() };
+    var res = { categories: [], country: $('#country-select').val() };
+    $('#preview-categories li').each(function(i, el) {
+        res.categories.push($(el).data('ids'));
+    });
+    return res;
 }
+
+
+
 
 function run(task, lastRes) {
     var taskSolved = presentTask(task),
@@ -350,47 +440,13 @@ function run(task, lastRes) {
         .done(run);
 }
 
-
-
-$.each(LobbyFactsCategories, function(i, category) {
-    var opt = $('<option value="'+category.id+'">'+category.title+'</option>');
-    if (category.children) {
-        opt.data('children', category.children);
-        opt.click(function(evt) {
-            $('#category-level-3').html('');
-            var select = $('#category-level-2');
-            select.html('<option value="-1">(no category)</option>');
-            $.each($(evt.target).data('children'), function(i, cat) {
-                var opt = $('<option value="'+cat.id+'">'+cat.title+'</option>');
-                select.append(opt);
-                if (cat.children) {
-                    opt.data('children', cat.children);
-                    opt.click(function(evt) {
-                        var select = $('#category-level-3');
-                        select.html('<option value="-1">(no category)</option>');
-                        $.each($(evt.target).data('children'), function(i, c) {
-                            select.append('<option value="'+c.id+'">'+c.title+'</option>');
-                        });
-                    });
-                } else {
-                    opt.click(function(evt) {
-                        $('#category-level-3').html('');
-                    })
-                }
-            });
-        });
-    }  else {
-        opt.click(function(evt) {
-            $('#category-level-2, #category-level-3').html('');
-        });
-    }
-    $('#category-level-1').append(opt);
-});
-
 $(function() {
 
+    initCategories();
+
     if (pybossa.getCurrentTaskId() == false) {
-        getTask().done(run);
+        getTask(location.hash && location.hash.substr(2).match(/^\d+$/) ? location.hash.substr(2) : false)
+            .done(run);
     }
 
     $("#country-select").data('source', ["Afghanistan", "Albania", "Algeria", "American Samoa", "Andorra", "Angola", "Anguilla", "Antarctica", "Antigua and Barbuda", "Argentina", "Armenia", "Aruba", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bermuda", "Bhutan", "Bolivia", "Bosnia and Herzegowina", "Botswana", "Bouvet Island", "Brazil", "British Indian Ocean Territory", "Brunei Darussalam", "Bulgaria", "Burkina Faso", "Burundi", "Cambodia", "Cameroon", "Canada", "Cape Verde", "Cayman Islands", "Central African Republic", "Chad", "Chile", "China", "Christmas Island", "Cocos (Keeling) Islands", "Colombia", "Comoros", "Congo", "Congo, the Democratic Republic of the", "Cook Islands", "Costa Rica", "Cote d'Ivoire", "Croatia (Hrvatska)", "Cuba", "Cyprus", "Czech Republic", "Denmark", "Djibouti", "Dominica", "Dominican Republic", "East Timor", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Ethiopia", "Falkland Islands (Malvinas)", "Faroe Islands", "Fiji", "Finland", "France", "France, Metropolitan", "French Guiana", "French Polynesia", "French Southern Territories", "Gabon", "Gambia", "Georgia", "Germany", "Ghana", "Gibraltar", "Greece", "Greenland", "Grenada", "Guadeloupe", "Guam", "Guatemala", "Guinea", "Guinea-Bissau", "Guyana", "Haiti", "Heard and Mc Donald Islands", "Holy See (Vatican City State)", "Honduras", "Hong Kong", "Hungary", "Iceland", "India", "Indonesia", "Iran (Islamic Republic of)", "Iraq", "Ireland", "Israel", "Italy", "Jamaica", "Japan", "Jordan", "Kazakhstan", "Kenya", "Kiribati", "Korea, Democratic People's Republic of", "Korea, Republic of", "Kuwait", "Kyrgyzstan", "Lao People's Democratic Republic", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libyan Arab Jamahiriya", "Liechtenstein", "Lithuania", "Luxembourg", "Macau", "Macedonia, The Former Yugoslav Republic of", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands", "Martinique", "Mauritania", "Mauritius", "Mayotte", "Mexico", "Micronesia, Federated States of", "Moldova, Republic of", "Monaco", "Mongolia", "Montserrat", "Morocco", "Mozambique", "Myanmar", "Namibia", "Nauru", "Nepal", "Netherlands", "Netherlands Antilles", "New Caledonia", "New Zealand", "Nicaragua", "Niger", "Nigeria", "Niue", "Norfolk Island", "Northern Mariana Islands", "Norway", "Oman", "Pakistan", "Palau", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Pitcairn", "Poland", "Portugal", "Puerto Rico", "Qatar", "Reunion", "Romania", "Russian Federation", "Rwanda", "Saint Kitts and Nevis", "Saint LUCIA", "Saint Vincent and the Grenadines", "Samoa", "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Seychelles", "Sierra Leone", "Singapore", "Slovakia (Slovak Republic)", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "South Georgia and the South Sandwich Islands", "Spain", "Sri Lanka", "St. Helena", "St. Pierre and Miquelon", "Sudan", "Suriname", "Svalbard and Jan Mayen Islands", "Swaziland", "Sweden", "Switzerland", "Syrian Arab Republic", "Taiwan, Province of China", "Tajikistan", "Tanzania, United Republic of", "Thailand", "Togo", "Tokelau", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", "Turks and Caicos Islands", "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "United States", "United States Minor Outlying Islands", "Uruguay", "Uzbekistan", "Vanuatu", "Venezuela", "Viet Nam", "Virgin Islands (British)", "Virgin Islands (U.S.)", "Wallis and Futuna Islands", "Western Sahara", "Yemen", "Yugoslavia", "Zambia", "Zimbabwe"]);
