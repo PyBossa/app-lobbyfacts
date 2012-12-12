@@ -1,10 +1,11 @@
 
+
 import json
 import requests
 
 out = []
 
-next = 'http://api.lobbyfacts.eu/api/1/representative?limit=1000'
+next = 'http://api.lobbyfacts.eu/api/1/representative?limit=500'
 
 while next:
     print len(out)
@@ -17,5 +18,4 @@ while next:
         next = False
 
 open('representatives.json', 'wb').write(json.dumps(out))
-
 
